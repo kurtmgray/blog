@@ -1,3 +1,6 @@
+const { text } = require('express');
+const { body, validationResult } = require('express-validator')
+
 const Post = require('../models/post')
 
 // GET all blog posts
@@ -17,7 +20,7 @@ exports.all_posts_get = async (req, res, next) => {
 exports.one_post_get = async (req, res, next) => {
     try {
         const posts = await Post.findById(req.params.postid)
-        //.populate('author')
+        .populate('author')
         
         if (!posts) {
             res.status(404).json({ err: 'post not found'})
@@ -28,3 +31,41 @@ exports.one_post_get = async (req, res, next) => {
     }
 }
 
+exports.create_post_post = [
+    
+    body('text').trim().isLength({ min: 1 }).withMessage('Text must be specified.'),
+    body('title').trim().isLength({ min: 1 }).withMessage('Title must be specified.'),
+
+    (req, res, next) => {
+        
+        const user = '62297074cf1e65126e6040bd'
+
+        console.log(req.body)
+        
+        const errors = validationResult(req)
+        
+        if(!errors.isEmpty()) {
+            res.json({ "errors": errors })
+        }
+        else {
+            const post = new Post(
+                {
+                    author: user,
+                    comments: [],
+                    published: req.body.published,
+                    text: req.body.text,
+                    timestamp: new Date,
+                    title: req.body.title
+                }
+            )
+
+            console.log(post)
+
+            post.save(err => {
+                console.log(err)
+                if (err) { return next(err) }
+                res.json({ "post": post })
+            })
+        }
+    }
+]
