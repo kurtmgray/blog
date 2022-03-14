@@ -38,9 +38,7 @@ exports.create_post_post = [
 
     (req, res, next) => {
         
-        const user = '62297074cf1e65126e6040bd'
-
-        console.log(req.body)
+        console.log(req.body.author)
         
         const errors = validationResult(req)
         
@@ -50,7 +48,7 @@ exports.create_post_post = [
         else {
             const post = new Post(
                 {
-                    author: user,
+                    author: req.body.author,
                     comments: [],
                     published: req.body.published,
                     text: req.body.text,

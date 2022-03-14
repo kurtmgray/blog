@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const postcontroller = require('../controllers/postcontroller')
 const commentcontroller = require('../controllers/commentcontroller')
-const usercontroller = require('../controllers/usercontroller')
+const usercontroller = require('../controllers/usercontroller');
 
 // Index redirect to api
 router.get('/', (req, res, next) => {
@@ -21,19 +21,40 @@ router.get('/api/posts/:postid', postcontroller.one_post_get)
 // router.get
 
 // POST create post
-router.post('/api/posts/create', postcontroller.create_post_post)
+router.post('/api/posts/', postcontroller.create_post_post)
 
 // GET a single post's comments
 router.get('/api/posts/:postid/comments', commentcontroller.one_post_comments_get)
+
+
+
 
 // GET a single comment on a single post (for editing?)
 router.get('/api/posts/:postid/comments/:commentid', commentcontroller.one_post_one_comment_get)
 
 // POST create a user
-router.post('/api/users/register', usercontroller.create_user_post)
+router.post('/api/users', usercontroller.create_user_post)
+
+// refresh route (verify token, return user)
+router.get('/api/users', usercontroller.refresh_get)
+
+router.get('/api/users/:userId')
+
+router.get('/api/users/:userId/posts')
+
+
+// necessary for dashboard? or can just sort out in front end
+router.get('/api/users/:userId/posts/published')
+
+router.get('/api/users/:userId/posts/unpublished')
+
+
 
 // POST login
 router.post('/api/users/login', usercontroller.log_in_post) 
+
+// testing protected route
+router.get('/protected', usercontroller.jwt_auth, usercontroller.protected)
 
 
 
