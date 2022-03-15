@@ -10,11 +10,13 @@ opts.secretOrKey = 'random string that should be secret';
 // opts.audience = 'yoursite.net'; DONT NEED EITHER OF THESE
 
 passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-    User.findOne({id: jwt_payload.id}, function(err, user) {
+
+    User.findOne({_id: jwt_payload.id}, function(err, user) {
         if (err) {
             return done(err, false);
         }
         if (user) {
+        
             return done(null, user);
         } else {
             return done(null, false);

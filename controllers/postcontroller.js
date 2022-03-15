@@ -1,6 +1,5 @@
 const { text } = require('express');
 const { body, validationResult } = require('express-validator')
-
 const Post = require('../models/post')
 
 // GET all blog posts
@@ -28,6 +27,30 @@ exports.one_post_get = async (req, res, next) => {
         res.json({ posts })
     } catch (err) {
         next(err)
+    }
+}
+
+exports.user_posts_get = async (req, res, next) => {
+    try {
+        const posts = await Post.find({ author: req.params.userId })
+
+        const published = posts.filter(post => post.published)
+        const unpublished = posts.filter(post => !post.published)
+
+        return res.status(200).send({
+            success: true,
+            posts: {
+                published: published,
+                unpublished: unpublished
+            }
+        })
+
+    } catch (err) {
+        console.error(err)
+        return res.status(401).send({
+            success: false,
+            error: err
+        })
     }
 }
 

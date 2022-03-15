@@ -1,4 +1,5 @@
 const User = require('../models/user')
+
 const { body, validationResult } = require('express-validator')
 const { hashSync, compare } = require('bcryptjs')
 const passport = require('passport')
@@ -59,10 +60,10 @@ exports.create_user_post = [
   }   
 ] 
 
-exports.log_in_post = async (req, res, next) => {
-    const user = await User.findOne({ username: req.body.username })
+exports.login_post = async (req, res, next) => {
+    const user = await User.findOne({ username: req.body.username }).populate('posts')
     const password = req.body.password
-    
+    console.log(user)
     if (!user) {
         return res.status(401).send({ 
             success: false,
@@ -81,7 +82,8 @@ exports.log_in_post = async (req, res, next) => {
     const payload = {
         id: user._id,
         username: user.username,
-        admin: user.admin
+        admin: user.admin,
+        posts: user.posts
     } 
     const token = jwt.sign(payload, 'random string that should be secret', { expiresIn: '1d' })
 
@@ -93,46 +95,25 @@ exports.log_in_post = async (req, res, next) => {
         user: {
             id: user._id,
             username: user.username,
+            admin: user.admin,
             posts: user.posts
         }
     })
     
 }
 
+exports.users_get = async (req, res, next) => {
+    return res.status(200).send({
+        success: true,
+        user: {
+            username: req.user.username,
+            id: req.user._id,
+            admin: req.user.admin,
+            posts: req.user.posts
+        }
+    })
+}
+
 exports.jwt_auth = passport.authenticate('jwt', {session: false})
 
-exports.protected = (req, res) => {
-    
-    return res.status(200).send({
-        success: true,
-        user: {
-            id: req.user._id,
-            username: req.user.username,
-        }
-    })
-}
 
-exports.refresh_get = async (req, res, next) => {
-    console.log(req.headers)
-    const secret = 'random string that should be secret'
-    const verifiedUser = jwt.verify(req.headers.authorization, secret)
-    
-    if (!verifiedUser) {
-        return res.status(401).send({
-            success: false,
-            message: 'Invalid token'
-        })
-    }
-
-    const user = await User.findById(verifiedUser.id)
-
-    return res.status(200).send({
-        success: true,
-        user: {
-            username: user.username,
-            posts: user.posts,
-            id: user._id,
-            admin: user.admin
-        }
-    })
-}

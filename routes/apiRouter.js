@@ -26,9 +26,6 @@ router.post('/api/posts/', postcontroller.create_post_post)
 // GET a single post's comments
 router.get('/api/posts/:postid/comments', commentcontroller.one_post_comments_get)
 
-
-
-
 // GET a single comment on a single post (for editing?)
 router.get('/api/posts/:postid/comments/:commentid', commentcontroller.one_post_one_comment_get)
 
@@ -36,25 +33,18 @@ router.get('/api/posts/:postid/comments/:commentid', commentcontroller.one_post_
 router.post('/api/users', usercontroller.create_user_post)
 
 // refresh route (verify token, return user)
-router.get('/api/users', usercontroller.refresh_get)
+router.get('/api/users', usercontroller.jwt_auth, usercontroller.users_get)
+
 
 router.get('/api/users/:userId')
 
-router.get('/api/users/:userId/posts')
-
-
-// necessary for dashboard? or can just sort out in front end
-router.get('/api/users/:userId/posts/published')
-
-router.get('/api/users/:userId/posts/unpublished')
-
+// GET route for a user's published and unpublished posts
+router.get('/api/users/:userId/posts', postcontroller.user_posts_get)
 
 
 // POST login
-router.post('/api/users/login', usercontroller.log_in_post) 
+router.post('/api/users/login', usercontroller.login_post) 
 
-// testing protected route
-router.get('/protected', usercontroller.jwt_auth, usercontroller.protected)
 
 
 
