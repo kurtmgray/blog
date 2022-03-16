@@ -5,11 +5,15 @@ const Post = require('../models/post')
 // GET all blog posts
 exports.all_posts_get = async (req, res, next) => {
     try {
-        const posts = await Post.find({})
+        const posts = await Post.find({}).populate('author')
         if (!posts) {
-            res.status(404).json({ err: 'no posts found'})
+            res.status(404).send({ 
+                err: 'no posts found'
+            })
         }
-        res.json({ posts });
+        res.status(200).send({ 
+            posts 
+        });
     } catch (err) {
         next(err)
     }
@@ -18,15 +22,43 @@ exports.all_posts_get = async (req, res, next) => {
 // GET a single blog post
 exports.one_post_get = async (req, res, next) => {
     try {
-        const posts = await Post.findById(req.params.postid)
+        const posts = await Post.findById(req.params.postId)
         .populate('author')
         
         if (!posts) {
-            res.status(404).json({ err: 'post not found'})
+            res.status(404).send({ 
+                err: 'post not found'
+            })
         }
-        res.json({ posts })
+        res.status(200).send({ 
+            posts 
+        })
     } catch (err) {
         next(err)
+    }
+}
+
+exports.one_post_delete = async (req, res, next) => {
+    try{
+        const post = await Post.findByIdAndDelete(req.params.postId)
+        console.log(await post)
+
+        try{
+            const posts = await Post.find({}).populate('author')
+            if (!posts) {
+                res.status(404).json({ err: 'no posts found'})
+            }
+            res.status(200).send({ 
+                posts 
+            });
+        } catch (err) {
+            next(err)
+        }
+    } catch (err) {
+        res.status(404).send({
+            success: false,
+            message: 'ID not found'
+        })
     }
 }
 
@@ -52,6 +84,7 @@ exports.user_posts_get = async (req, res, next) => {
             error: err
         })
     }
+    
 }
 
 exports.create_post_post = [

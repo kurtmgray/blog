@@ -14,20 +14,22 @@ router.get('/', (req, res, next) => {
 // GET all blog posts
 router.get('/api/posts', postcontroller.all_posts_get);
 
-// GET a single blog post
-router.get('/api/posts/:postid', postcontroller.one_post_get)
-
-// 
-// router.get
-
 // POST create post
 router.post('/api/posts/', postcontroller.create_post_post)
 
+// GET a single blog post
+router.get('/api/posts/:postId', postcontroller.one_post_get)
+
+// DELETE to delete a post
+router.delete('/api/posts/:postId', postcontroller.one_post_delete) 
+
+
+
 // GET a single post's comments
-router.get('/api/posts/:postid/comments', commentcontroller.one_post_comments_get)
+router.get('/api/posts/:postId/comments', commentcontroller.one_post_comments_get)
 
 // GET a single comment on a single post (for editing?)
-router.get('/api/posts/:postid/comments/:commentid', commentcontroller.one_post_one_comment_get)
+router.get('/api/posts/:postId/comments/:commentId', commentcontroller.one_post_one_comment_get)
 
 // POST create a user
 router.post('/api/users', usercontroller.create_user_post)
