@@ -23,6 +23,12 @@ router.get('/api/posts/:postId', postcontroller.one_post_get)
 // DELETE to delete a post
 router.delete('/api/posts/:postId', postcontroller.one_post_delete) 
 
+// PATCH to change one element on that post
+router.patch('/api/posts/:postId', postcontroller.one_post_patch) 
+
+// PUT to update title/text of post
+router.put('/api/posts/:postId', postcontroller.one_post_put)
+
 
 
 // GET a single post's comments
@@ -31,15 +37,19 @@ router.get('/api/posts/:postId/comments', commentcontroller.one_post_comments_ge
 // GET a single comment on a single post (for editing?)
 router.get('/api/posts/:postId/comments/:commentId', commentcontroller.one_post_one_comment_get)
 
+
+
 // POST create a user
 router.post('/api/users', usercontroller.create_user_post)
 
 // refresh route (verify token, return user)
 router.get('/api/users', usercontroller.jwt_auth, usercontroller.users_get)
 
-
+// GET to read a user
 router.get('/api/users/:userId')
 
+
+// where does this go? usercontroller or postcontroller?
 // GET route for a user's published and unpublished posts
 router.get('/api/users/:userId/posts', postcontroller.user_posts_get)
 
@@ -48,6 +58,11 @@ router.get('/api/users/:userId/posts', postcontroller.user_posts_get)
 router.post('/api/users/login', usercontroller.login_post) 
 
 
-
+/*
+POST = Create
+GET = Read
+PUT or PATCH = Update
+DELETE = Delete
+*/
 
 module.exports = router;

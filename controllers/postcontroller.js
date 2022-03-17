@@ -1,4 +1,3 @@
-const { text } = require('express');
 const { body, validationResult } = require('express-validator')
 const Post = require('../models/post')
 
@@ -22,16 +21,16 @@ exports.all_posts_get = async (req, res, next) => {
 // GET a single blog post
 exports.one_post_get = async (req, res, next) => {
     try {
-        const posts = await Post.findById(req.params.postId)
+        const post = await Post.findById(req.params.postId)
         .populate('author')
         
-        if (!posts) {
+        if (!post) {
             res.status(404).send({ 
                 err: 'post not found'
             })
         }
         res.status(200).send({ 
-            posts 
+            post 
         })
     } catch (err) {
         next(err)
@@ -40,19 +39,27 @@ exports.one_post_get = async (req, res, next) => {
 
 exports.one_post_delete = async (req, res, next) => {
     try{
+        
         const post = await Post.findByIdAndDelete(req.params.postId)
         console.log(await post)
-
-        try{
-            const posts = await Post.find({}).populate('author')
-            if (!posts) {
-                res.status(404).json({ err: 'no posts found'})
+        
+        // new - is this ok, so should I call a separate fetch fron the frontend?
+        // seems that either way I would be repeating code?
+        if (await post) { 
+            try{
+                const posts = await Post.find({}).populate('author')
+                if (!posts) {
+                    res.status(404).send({ 
+                        success: false,
+                        message: 'no posts found'})
+                }
+                res.status(200).send({ 
+                    success: true,
+                    posts 
+                });
+            } catch (err) {
+                next(err)
             }
-            res.status(200).send({ 
-                posts 
-            });
-        } catch (err) {
-            next(err)
         }
     } catch (err) {
         res.status(404).send({
@@ -62,10 +69,65 @@ exports.one_post_delete = async (req, res, next) => {
     }
 }
 
+exports.one_post_patch = async (req, res, next) => {
+    try{
+        const post = await Post.findByIdAndUpdate(req.params.postId, {
+            published: req.body.published
+        })
+        // some of these Mongoose methods have callbacks that return an 
+        // error (if any) and the post (prior to update) do i need that callback? just for the error, maybe?
+        if (await post) { 
+            try{
+                const posts = await Post.find({}).populate('author')
+                if (!posts) {
+                    res.status(404).send({ 
+                        success: false,
+                        message: 'no posts found'})
+                }
+                res.status(200).send({ 
+                    success: true,
+                    posts 
+                });
+            } catch (err) {
+                next(err)
+            }
+        }
+
+    } catch (err) {
+        next(err)
+    }
+}
+
+exports.one_post_put = async (req, res, next) => {
+    try {
+        const post = await Post.findByIdAndUpdate(req.params.id, {
+            _id: req.body._id,
+            author: req.body.author,
+            title: req.body.title,
+            text: req.body.text,
+            published: req.body.published,
+            timestamp: req.body.timestamp
+        })
+        return res.status(200).send({
+            success: true,
+            message: 'Post updated'
+        })
+    } catch (err) {
+        // what am i doing here? next? return the error as response? both?
+        next(err)
+        return res.status(401).send({
+            success: false,
+            error: err
+        })
+    }
+}
+
+
 exports.user_posts_get = async (req, res, next) => {
     try {
         const posts = await Post.find({ author: req.params.userId })
 
+        // better to filter on backend or frontend?
         const published = posts.filter(post => post.published)
         const unpublished = posts.filter(post => !post.published)
 
@@ -78,7 +140,7 @@ exports.user_posts_get = async (req, res, next) => {
         })
 
     } catch (err) {
-        console.error(err)
+        next(err)
         return res.status(401).send({
             success: false,
             error: err
