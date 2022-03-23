@@ -90,7 +90,7 @@ exports.login_post = async (req, res, next) => {
     return res.status(200).send({ 
         success: true,
         message: 'Logged in successfully',
-        token: 'Bearer ' + token,
+        token: token,
         // this becomes currentUser
         user: {
             id: user._id,

@@ -37,30 +37,14 @@ exports.one_post_get = async (req, res, next) => {
     }
 }
 
-exports.one_post_delete = async (req, res, next) => {
+exports.one_post_delete = async (req, res) => {
     try{
-        
         const post = await Post.findByIdAndDelete(req.params.postId)
         console.log(await post)
-        
-        // new - is this ok, so should I call a separate fetch fron the frontend?
-        // seems that either way I would be repeating code?
-        if (await post) { 
-            try{
-                const posts = await Post.find({}).populate('author')
-                if (!posts) {
-                    res.status(404).send({ 
-                        success: false,
-                        message: 'no posts found'})
-                }
-                res.status(200).send({ 
-                    success: true,
-                    posts 
-                });
-            } catch (err) {
-                next(err)
-            }
-        }
+        res.status(200).send({ 
+            success: true,
+            message: 'Post deleted.'
+        })
     } catch (err) {
         res.status(404).send({
             success: false,
@@ -69,38 +53,43 @@ exports.one_post_delete = async (req, res, next) => {
     }
 }
 
-exports.one_post_patch = async (req, res, next) => {
+exports.one_post_patch = async (req, res) => {
     try{
         const post = await Post.findByIdAndUpdate(req.params.postId, {
             published: req.body.published
         })
         // some of these Mongoose methods have callbacks that return an 
         // error (if any) and the post (prior to update) do i need that callback? just for the error, maybe?
-        if (await post) { 
+        if (post) { 
             try{
-                const posts = await Post.find({}).populate('author')
-                if (!posts) {
+                const updatedPost = await Post.findById(req.params.postId).populate('author')
+                if (!updatedPost) {
                     res.status(404).send({ 
                         success: false,
-                        message: 'no posts found'})
+                        message: 'no post found'})
                 }
                 res.status(200).send({ 
                     success: true,
-                    posts 
+                    updatedPost 
                 });
             } catch (err) {
-                next(err)
+                console.log(err)
             }
         }
 
+        // SEND BACK THE ONE UPDATED POST, THEN MERGE INTO POSTS STATE on FE
+
     } catch (err) {
-        next(err)
+        res.status(404).send({ 
+            success: false,
+            error: err
+        })
     }
 }
 
-exports.one_post_put = async (req, res, next) => {
+exports.one_post_put = async (req, res) => {
     try {
-        const post = await Post.findByIdAndUpdate(req.params.id, {
+        const post = await Post.findByIdAndUpdate(req.params.postId, {
             _id: req.body._id,
             author: req.body.author,
             title: req.body.title,
@@ -108,14 +97,13 @@ exports.one_post_put = async (req, res, next) => {
             published: req.body.published,
             timestamp: req.body.timestamp
         })
+        console.log(post)
         return res.status(200).send({
             success: true,
             message: 'Post updated'
         })
     } catch (err) {
-        // what am i doing here? next? return the error as response? both?
-        next(err)
-        return res.status(401).send({
+        return res.status(123).send({
             success: false,
             error: err
         })
@@ -123,7 +111,7 @@ exports.one_post_put = async (req, res, next) => {
 }
 
 
-exports.user_posts_get = async (req, res, next) => {
+exports.user_posts_get = async (req, res) => {
     try {
         const posts = await Post.find({ author: req.params.userId })
 
@@ -140,7 +128,6 @@ exports.user_posts_get = async (req, res, next) => {
         })
 
     } catch (err) {
-        next(err)
         return res.status(401).send({
             success: false,
             error: err
@@ -161,9 +148,12 @@ exports.create_post_post = [
         const errors = validationResult(req)
         
         if(!errors.isEmpty()) {
-            res.json({ "errors": errors })
+            res.send({ 
+                success: false,
+                errors: errors })
         }
         else {
+            
             const post = new Post(
                 {
                     author: req.body.author,
@@ -180,7 +170,10 @@ exports.create_post_post = [
             post.save(err => {
                 console.log(err)
                 if (err) { return next(err) }
-                res.json({ "post": post })
+                res.send({ 
+                    success: true,
+                    post: post 
+                })
             })
         }
     }
