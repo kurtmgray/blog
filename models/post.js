@@ -9,7 +9,13 @@ const PostSchema = new Schema({
     imgUrl: {type: String},
     published: {type: Boolean, required: true},
     timestamp: {type: Date, required: true},
-    comments: [{type: Schema.Types.ObjectId, ref: 'Comment', required: true}] 
+    // comments: [{type: Schema.Types.ObjectId, ref: 'Comment', required: true}] 
+})
+
+PostSchema
+.virtual('preview')
+.get(function () {
+    return this.text.slice(0, 200)
 })
 
 module.exports = mongoose.model('Post', PostSchema)

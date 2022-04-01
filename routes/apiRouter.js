@@ -31,9 +31,8 @@ router.patch('/api/posts/:postId', usercontroller.jwt_auth, postcontroller.one_p
 router.put('/api/posts/:postId', usercontroller.jwt_auth, postcontroller.one_post_put)
 
 
-
 // GET a single post's comments
-router.get('/api/posts/:postId/comments', usercontroller.jwt_auth, commentcontroller.one_post_comments_get)
+router.get('/api/posts/:postId/comments', commentcontroller.one_post_comments_get)
 
 // GET a single comment on a single post (for editing?)
 router.get('/api/posts/:postId/comments/:commentId', commentcontroller.one_post_one_comment_get)
@@ -42,10 +41,10 @@ router.get('/api/posts/:postId/comments/:commentId', commentcontroller.one_post_
 router.post('/api/posts/:postId/comments', usercontroller.jwt_auth, commentcontroller.create_comment_post)
 
 // DELETE a comment on a single post
-router.delete('/api/posts/:postId/comments/:commentId', commentcontroller.one_comment_delete)
+router.delete('/api/posts/:postId/comments/:commentId', usercontroller.jwt_auth, commentcontroller.one_comment_delete)
 
-// // PATCH to update text of comment
-// router.patch('/api/posts/:postId/comments/:commentId', commentcontroller.one_comment_patch)
+// PATCH to update text of comment
+router.patch('/api/posts/:postId/comments/:commentId', usercontroller.jwt_auth, commentcontroller.one_comment_patch)
 
 
 // POST create a user

@@ -5,7 +5,7 @@ const { body, validationResult } = require('express-validator')
 // GET a single post's comments
 exports.one_post_comments_get = async (req, res) => {
     try {
-        const comments = await Comment.find({ post: req.params.postId })
+        const comments = await Comment.find({ post: req.params.postId }).populate('author')
         if(!comments) {
             res.status(404).send({ 
                 error: `no comments found for post ${req.params.postId}`
@@ -67,7 +67,7 @@ exports.create_comment_post = [
                 if (err) { return next(err) }
                 res.status(200).send({ 
                     success: true,
-                    comment: comment })
+                    comment: comment })  
             })
 
         }
@@ -75,11 +75,8 @@ exports.create_comment_post = [
 ]
 
 exports.one_comment_delete = async (req, res) => {
-    console.log('hello')
     try{
-        console.log('api')
         const comment = await Comment.findByIdAndDelete(req.params.commentId)
-        console.log(await comment)
         res.status(200).send({ 
             success: true,
             message: 'Comment deleted.'
@@ -88,6 +85,40 @@ exports.one_comment_delete = async (req, res) => {
         res.status(404).send({
             success: false,
             message: 'ID not found:', err
+        })
+    }
+}
+
+exports.one_comment_patch = async (req, res) => {
+    console.log(req.body)
+    try {
+        const comment = await Comment.findByIdAndUpdate(req.params.commentId,
+            { text: req.body.text },
+        )
+
+        
+        if (comment) {
+            try {
+                const updatedComment = await Comment.findById(req.params.commentId).populate('author')
+                console.log('UC', updatedComment)
+                if (!updatedComment) {
+                    res.status(404).send({
+                        success: false,
+                        message: 'no comment found'
+                    })
+                }
+                res.status(200).send({ 
+                    success: true,
+                    updatedComment 
+                })    
+            } catch (err) {
+                console.log(err)
+            }
+        }
+    } catch (err) {
+        res.status(404).send({
+            success: false,
+            error: err
         })
     }
 }

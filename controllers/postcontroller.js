@@ -58,8 +58,6 @@ exports.one_post_patch = async (req, res) => {
         const post = await Post.findByIdAndUpdate(req.params.postId, {
             published: req.body.published
         })
-        // some of these Mongoose methods have callbacks that return an 
-        // error (if any) and the post (prior to update) do i need that callback? just for the error, maybe?
         if (post) { 
             try{
                 const updatedPost = await Post.findById(req.params.postId).populate('author')
@@ -76,9 +74,6 @@ exports.one_post_patch = async (req, res) => {
                 console.log(err)
             }
         }
-
-        // SEND BACK THE ONE UPDATED POST, THEN MERGE INTO POSTS STATE on FE
-
     } catch (err) {
         res.status(404).send({ 
             success: false,
@@ -94,6 +89,7 @@ exports.one_post_put = async (req, res) => {
             author: req.body.author,
             title: req.body.title,
             text: req.body.text,
+            imgUrl: req.body.url,
             published: req.body.published,
             timestamp: req.body.timestamp
         })
@@ -157,7 +153,8 @@ exports.create_post_post = [
             const post = new Post(
                 {
                     author: req.body.author,
-                    comments: [],
+                    // comments: [],
+                    imgUrl: req.body.imgUrl,
                     published: req.body.published,
                     text: req.body.text,
                     timestamp: new Date,
