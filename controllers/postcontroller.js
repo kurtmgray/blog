@@ -43,7 +43,8 @@ exports.one_post_delete = async (req, res) => {
         console.log(await post)
         res.status(200).send({ 
             success: true,
-            message: 'Post deleted.'
+            message: 'Post deleted.', 
+            id: post._id
         })
     } catch (err) {
         res.status(404).send({

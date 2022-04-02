@@ -77,9 +77,11 @@ exports.create_comment_post = [
 exports.one_comment_delete = async (req, res) => {
     try{
         const comment = await Comment.findByIdAndDelete(req.params.commentId)
+        console.log(comment)
         res.status(200).send({ 
             success: true,
-            message: 'Comment deleted.'
+            message: 'Comment deleted.',
+            id: comment._id
         })
     } catch (err) {
         res.status(404).send({
