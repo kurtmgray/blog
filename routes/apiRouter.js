@@ -48,7 +48,7 @@ router.patch('/api/posts/:postId/comments/:commentId', usercontroller.jwt_auth, 
 
 
 // POST create a user
-router.post('/api/users', usercontroller.jwt_auth, usercontroller.create_user_post)
+router.post('/api/users', usercontroller.create_user_post)
 
 // refresh route (verify token, return user)
 router.get('/api/users', usercontroller.jwt_auth, usercontroller.users_get)
