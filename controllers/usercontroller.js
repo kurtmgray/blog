@@ -47,6 +47,7 @@ exports.create_user_post = [
         fname: req.body.fname,
         lname: req.body.lname,
         admin: false,
+        canPublish: false,
         posts: [],
         comments: [],
       });
@@ -59,6 +60,7 @@ exports.create_user_post = [
             user: {
               id: user._id,
               username: user.username,
+              canPublish: user.canPublish,
               admin: user.admin,
             },
           });
@@ -92,6 +94,7 @@ exports.login_post = async (req, res, next) => {
         fname: req.body.profile.given_name,
         lname: req.body.profile.family_name,
         admin: false,
+        canPublish: false,
         posts: [],
         comments: [],
       };
@@ -124,6 +127,7 @@ exports.login_post = async (req, res, next) => {
     id: user._id,
     username: user.username,
     admin: user.admin,
+    canPublish: user.canPublish,
     posts: user.posts,
   };
   const token = jwt.sign(payload, "random string that should be secret", {
@@ -139,6 +143,7 @@ exports.login_post = async (req, res, next) => {
       id: user._id,
       username: user.username,
       admin: user.admin,
+      canPublish: user.canPublish,
       posts: user.posts,
     },
   });
@@ -150,6 +155,7 @@ exports.users_get = async (req, res, next) => {
     user: {
       username: req.user.username,
       id: req.user._id,
+      canPublish: req.user.canPublish,
       admin: req.user.admin,
       posts: req.user.posts,
     },

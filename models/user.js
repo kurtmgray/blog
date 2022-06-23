@@ -9,6 +9,7 @@ const UserSchema = new Schema({
   fname: { type: String, required: true },
   lname: { type: String, required: true },
   admin: { type: Boolean, required: true },
+  canPublish: { type: Boolean, required: true },
   posts: [{ type: Schema.Types.ObjectId, ref: "Post", required: true }],
   comments: [{ type: Schema.Types.ObjectId, ref: "Comment", required: true }],
 });
