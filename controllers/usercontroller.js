@@ -1,5 +1,4 @@
 const User = require("../models/user");
-require("dotenv").config();
 
 const { body, validationResult } = require("express-validator");
 const { hashSync, compare } = require("bcryptjs");
@@ -127,7 +126,7 @@ exports.login_post = async (req, res, next) => {
     admin: user.admin,
     posts: user.posts,
   };
-  const token = jwt.sign(payload, process.env.JWT_SECRET, {
+  const token = jwt.sign(payload, "random string that should be secret", {
     expiresIn: "1d",
   });
 

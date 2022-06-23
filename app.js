@@ -11,7 +11,7 @@ const passport = require("passport");
 const session = require("express-session");
 
 require("dotenv").config();
-
+console.log(process.env);
 const mongoDB = process.env.MONGO_DB;
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 
