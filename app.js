@@ -34,7 +34,8 @@ app.use(express.static(path.join(__dirname, "public")));
 //JWT STRATEGY
 app.use(passport.initialize());
 
-require("./auth")(passport);
+require("./auth");
+// (passport);
 
 app.use(
   session({
