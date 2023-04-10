@@ -24,7 +24,6 @@ var app = express();
 
 // require("./config/passport");
 
-app.use(cors());
 app.use(
   cors({
     origin: "https://morning-meadow-95658.herokuapp.com",
