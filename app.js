@@ -24,14 +24,12 @@ var app = express();
 
 // require("./config/passport");
 
-app.options(
-  "*",
+app.use(
   cors({
     origin: [
       "https://morning-meadow-95658.herokuapp.com",
       "https://blog.kurtgray.dev",
     ],
-    credentials: true,
   })
 );
 app.use(logger("dev"));
