@@ -27,9 +27,8 @@ var app = express();
 app.options(
   "*",
   cors({
-    // origin: "https://morning-meadow-95658.herokuapp.com/",
-    // credentials: true,
-    origin: false,
+    origin: "https://morning-meadow-95658.herokuapp.com/",
+    credentials: true,
   })
 );
 app.use(logger("dev"));
