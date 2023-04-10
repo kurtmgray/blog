@@ -10,8 +10,6 @@ const MongoStore = require("connect-mongo");
 const passport = require("passport");
 const session = require("express-session");
 
-// require("dotenv").config();
-// console.log(process.env);
 const mongoDB = process.env.MONGO_DB;
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -21,15 +19,6 @@ db.on("error", console.error.bind(console, "MongoDB connection error:"));
 var apiRouter = require("./routes/apiRouter");
 
 var app = express();
-
-// require("./config/passport");
-
-// const corsOptions = {
-//   origin: function (origin, callback) {
-//     console.log("This is origin: ", origin);
-//   },
-//   credentials: true,
-// };
 
 app.use(
   cors({
@@ -49,18 +38,8 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(passport.initialize());
 
 require("./auth");
-// (passport);
 
-// app.use(
-//   session({
-//     secret: process.env.SESSION_SECRET,
-//     resave: false,
-//     saveUninitialized: true,
-//     cookie: { secure: true },
-//   })
-// );
 app.use(passport.initialize());
-// app.use(passport.session());
 
 app.use("/", apiRouter);
 
