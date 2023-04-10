@@ -26,7 +26,7 @@ var app = express();
 
 app.use(
   cors({
-    origin: "https://morning-meadow-95658.herokuapp.com",
+    origin: "https://morning-meadow-95658.herokuapp.com/",
     credentials: true,
   })
 );
