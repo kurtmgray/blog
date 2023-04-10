@@ -23,15 +23,21 @@ var apiRouter = require("./routes/apiRouter");
 var app = express();
 
 // require("./config/passport");
-
-app.use(
-  cors({
-    origin: [
-      "https://morning-meadow-95658.herokuapp.com",
-      "https://blog.kurtgray.dev",
-    ],
-  })
-);
+const corsOptions = {
+  origin: function (origin, callback) {
+    console.log("This is origin: ", origin);
+  },
+  credentials: true,
+};
+app.use(cors(corsOptions));
+// app.use(
+//   cors({
+//     origin: [
+//       "https://morning-meadow-95658.herokuapp.com",
+//       "https://blog.kurtgray.dev",
+//     ],
+//   })
+// );
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

@@ -1,6 +1,5 @@
 var express = require("express");
 var router = express.Router();
-const cors = require("cors");
 const passport = require("passport");
 const postcontroller = require("../controllers/postcontroller");
 const commentcontroller = require("../controllers/commentcontroller");
@@ -8,7 +7,7 @@ const usercontroller = require("../controllers/usercontroller");
 const comment = require("../models/comment");
 
 // Index redirect to api
-router.get("/", cors(), (req, res, next) => {
+router.get("/", (req, res, next) => {
   res.redirect("/api/posts");
 });
 
