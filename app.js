@@ -10,9 +10,10 @@ const MongoStore = require("connect-mongo");
 const passport = require("passport");
 const session = require("express-session");
 
-require("dotenv").config();
-console.log(process.env);
-const mongoDB = process.env.MONGO_DB;
+// require("dotenv").config();
+// console.log(process.env);
+const mongoDB = "";
+// process.env.MONGO_DB;
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const db = mongoose.connection;
@@ -23,21 +24,22 @@ var apiRouter = require("./routes/apiRouter");
 var app = express();
 
 // require("./config/passport");
-const corsOptions = {
-  origin: function (origin, callback) {
-    console.log("This is origin: ", origin);
-  },
-  credentials: true,
-};
-app.use(cors(corsOptions));
-// app.use(
-//   cors({
-//     origin: [
-//       "https://morning-meadow-95658.herokuapp.com",
-//       "https://blog.kurtgray.dev",
-//     ],
-//   })
-// );
+
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     console.log("This is origin: ", origin);
+//   },
+//   credentials: true,
+// };
+
+app.use(
+  cors({
+    origin: [
+      "https://morning-meadow-95658.herokuapp.com",
+      "https://blog.kurtgray.dev",
+    ],
+  })
+);
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
