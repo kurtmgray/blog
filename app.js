@@ -27,7 +27,10 @@ var app = express();
 app.options(
   "*",
   cors({
-    origin: "https://morning-meadow-95658.herokuapp.com/",
+    origin: [
+      "https://morning-meadow-95658.herokuapp.com",
+      "https://blog.kurtgray.dev",
+    ],
     credentials: true,
   })
 );
