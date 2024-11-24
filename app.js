@@ -23,9 +23,11 @@ var app = express();
 app.use(
   cors({
     origin: [
+      "http://localhost:3000",
       "https://morning-meadow-95658.herokuapp.com",
       "https://blog.kurtgray.dev",
     ],
+    credentials: true,
   })
 );
 app.use(logger("dev"));

@@ -6,20 +6,34 @@ const passport = require("passport");
 const jwt = require("jsonwebtoken");
 
 exports.create_user_post = [
+  // body("fname")
+  //   .trim()
+  //   .isLength({ min: 1 })
+  //   .escape()
+  //   .withMessage("First name must be specified.")
+  //   .isAlphanumeric()
+  //   .withMessage("First name has non-alphanumeric characters."),
+  // body("lname")
+  //   .trim()
+  //   .isLength({ min: 1 })
+  //   .escape()
+  //   .withMessage("Last name must be specified.")
+  //   .isAlphanumeric()
+  //   .withMessage("Last name has non-alphanumeric characters."),
   body("fname")
     .trim()
     .isLength({ min: 1 })
     .escape()
     .withMessage("First name must be specified.")
-    .isAlphanumeric()
-    .withMessage("First name has non-alphanumeric characters."),
+    .matches(/^[a-zA-Z\s]+$/)
+    .withMessage("First name can only contain letters and spaces."),
   body("lname")
     .trim()
     .isLength({ min: 1 })
     .escape()
     .withMessage("Last name must be specified.")
-    .isAlphanumeric()
-    .withMessage("Last name has non-alphanumeric characters."),
+    .matches(/^[a-zA-Z\s]+$/)
+    .withMessage("Last name can only contain letters and spaces."),
   body("username")
     .trim()
     .isLength({ min: 1 })
@@ -39,7 +53,10 @@ exports.create_user_post = [
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      res.json({ errors: errors });
+      res.json({ 
+        success: false,
+        errors: errors 
+      });
     } else {
       const user = new User({
         username: req.body.username,
