@@ -48,7 +48,7 @@ exports.create_user_post = [
     .withMessage("Password must be at least 6 characters."),
 
   (req, res, next) => {
-    console.log("reqbody", req);
+    // console.log("reqbody", req);
 
     const errors = validationResult(req);
 
@@ -116,7 +116,7 @@ exports.login_post = async (req, res, next) => {
         comments: [],
       };
       user = await User.create(newUser);
-      console.log(user);
+      // console.log(user);
     }
   } else {
     // else POST req came from non-oauth, look up by
@@ -124,11 +124,11 @@ exports.login_post = async (req, res, next) => {
       "posts"
     );
     const password = req.body.password;
-    console.log("this is user:", user);
     if (!user) {
       return res.status(401).send({
         success: false,
         message: "User does not exist",
+        field: "username",
       });
     }
 
@@ -137,6 +137,7 @@ exports.login_post = async (req, res, next) => {
       return res.status(401).send({
         success: false,
         message: "Password does not match",
+        field: "password",
       });
     }
   }

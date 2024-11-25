@@ -9,6 +9,7 @@ const bcrypt = require("bcryptjs");
 const MongoStore = require("connect-mongo");
 const passport = require("passport");
 const session = require("express-session");
+require("dotenv").config();
 
 const mongoDB = process.env.MONGO_DB;
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
