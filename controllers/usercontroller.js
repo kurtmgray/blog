@@ -1,9 +1,9 @@
-const User = require("../models/user");
+const User = require('../models/user');
 
-const { body, validationResult } = require("express-validator");
-const { hashSync, compare } = require("bcryptjs");
-const passport = require("passport");
-const jwt = require("jsonwebtoken");
+const { body, validationResult } = require('express-validator');
+const { hashSync, compare } = require('bcryptjs');
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
 
 exports.create_user_post = [
   // body("fname")
@@ -20,44 +20,51 @@ exports.create_user_post = [
   //   .withMessage("Last name must be specified.")
   //   .isAlphanumeric()
   //   .withMessage("Last name has non-alphanumeric characters."),
-  body("fname")
+  body('fname')
     .trim()
     .isLength({ min: 1 })
     .escape()
-    .withMessage("First name must be specified.")
+    .withMessage('First name must be specified.')
     .matches(/^[a-zA-Z\s]+$/)
-    .withMessage("First name can only contain letters and spaces."),
-  body("lname")
+    .withMessage('First name can only contain letters and spaces.'),
+  body('lname')
     .trim()
     .isLength({ min: 1 })
     .escape()
-    .withMessage("Last name must be specified.")
+    .withMessage('Last name must be specified.')
     .matches(/^[a-zA-Z\s]+$/)
-    .withMessage("Last name can only contain letters and spaces."),
-  body("username")
+    .withMessage('Last name can only contain letters and spaces.'),
+  body('username')
     .trim()
     .isLength({ min: 1 })
     .escape()
-    .withMessage("Username must be specified.")
+    .withMessage('Username must be specified.')
     .isAlphanumeric()
-    .withMessage("Username has non-alphanumeric characters."),
-  body("password")
+    .withMessage('Username has non-alphanumeric characters.'),
+  body('password')
     .trim()
     .isLength({ min: 6 })
     .escape()
-    .withMessage("Password must be at least 6 characters."),
+    .withMessage('Password must be at least 6 characters.'),
 
-  (req, res, next) => {
+  async (req, res, next) => {
     // console.log("reqbody", req);
 
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      res.json({ 
-        success: false,
-        errors: errors 
-      });
+      res.json(errors);
     } else {
+      const existingUser = await User.findOne({ username: req.body.username });
+
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          message: 'Username is already taken.',
+          field: 'usernameTaken',
+        });
+      }
+
       const user = new User({
         username: req.body.username,
         password: hashSync(req.body.password, 10),
@@ -73,9 +80,10 @@ exports.create_user_post = [
         .then((user) => {
           res.json({
             success: true,
-            message: "User created successfully",
+            message: 'User created successfully',
             user: {
               id: user._id,
+              fname: user.fname,
               username: user.username,
               canPublish: user.canPublish,
               admin: user.admin,
@@ -86,7 +94,7 @@ exports.create_user_post = [
           if (err) {
             res.json({
               success: false,
-              message: "Something went wrong",
+              message: 'Something went wrong',
               error: err,
             });
           }
@@ -101,7 +109,7 @@ exports.login_post = async (req, res, next) => {
   // if googleId, post call came from google OAuth
   if (req.body.googleId) {
     user = await User.findOne({ googleId: req.body.googleId }).populate(
-      "posts"
+      'posts'
     );
     if (!user) {
       const newUser = {
@@ -121,14 +129,14 @@ exports.login_post = async (req, res, next) => {
   } else {
     // else POST req came from non-oauth, look up by
     user = await User.findOne({ username: req.body.username }).populate(
-      "posts"
+      'posts'
     );
     const password = req.body.password;
     if (!user) {
       return res.status(401).send({
         success: false,
-        message: "User does not exist",
-        field: "username",
+        message: 'User does not exist',
+        field: 'username',
       });
     }
 
@@ -136,8 +144,8 @@ exports.login_post = async (req, res, next) => {
     if (!pwdVerify) {
       return res.status(401).send({
         success: false,
-        message: "Password does not match",
-        field: "password",
+        message: 'Password does not match',
+        field: 'password',
       });
     }
   }
@@ -148,17 +156,18 @@ exports.login_post = async (req, res, next) => {
     canPublish: user.canPublish,
     posts: user.posts,
   };
-  const token = jwt.sign(payload, "random string that should be secret", {
-    expiresIn: "1d",
+  const token = jwt.sign(payload, 'random string that should be secret', {
+    expiresIn: '1d',
   });
 
   return res.status(200).send({
     success: true,
-    message: "Logged in successfully",
+    message: 'Logged in successfully',
     token: token,
     // this becomes currentUser
     user: {
       id: user._id,
+      fname: user.fname,
       username: user.username,
       admin: user.admin,
       canPublish: user.canPublish,
@@ -173,6 +182,7 @@ exports.users_get = async (req, res, next) => {
     user: {
       username: req.user.username,
       id: req.user._id,
+      fname: req.user.fname,
       canPublish: req.user.canPublish,
       admin: req.user.admin,
       posts: req.user.posts,
@@ -180,7 +190,7 @@ exports.users_get = async (req, res, next) => {
   });
 };
 
-exports.jwt_auth = passport.authenticate("jwt", { session: false });
-exports.google_auth = passport.authenticate("google", {
-  scope: ["email", "profile"],
+exports.jwt_auth = passport.authenticate('jwt', { session: false });
+exports.google_auth = passport.authenticate('google', {
+  scope: ['email', 'profile'],
 });
